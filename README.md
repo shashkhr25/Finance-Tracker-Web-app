@@ -1,10 +1,13 @@
 # FinanceTracker Web
 
-A local-first browser app that implements the full feature set from `APP_FEATURES.md`.
+A local-first browser app that implements the full feature set from finance tracker
+
+## User Interface
+![Alt text](https://github.com/shashkhr25/Finance-Tracker-Web-app/Screenshots/dashboard.png)%   
 
 ## Run
 
-1. Open `/Users/shashwatkhare/Documents/Projects/financeTrackerWesbite/index.html` in your browser.
+1. Open `ndex.html` in your browser.
 2. Create or select a user.
 3. Start adding expense/income entries from Dashboard.
 
