@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinanceTracker Web</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb orb-a"></div>
+    <div class="bg-orb orb-b"></div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <section id="user-screen" class="screen auth-screen">
+      <div class="auth-card reveal">
+        <h1>FinanceTracker</h1>
+        <p class="muted">Local-first personal finance, debt, and shared expense tracking.</p>
+
+        <div class="auth-grid">
+          <div class="panel">
+            <h2>Create user</h2>
+            <form id="create-user-form" class="form-stack">
+              <label>
+                Username
+                <input id="create-username" type="text" placeholder="At least 3 characters" required />
+              </label>
+              <button type="submit" class="btn primary">Create and Continue</button>
+            </form>
+          </div>
+
+          <div class="panel">
+            <h2>Existing users</h2>
+            <div id="user-list" class="user-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="app-shell" class="screen app-shell hidden">
+      <aside class="sidebar reveal">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <div>
+            <h2>FinanceTracker</h2>
+            <p id="active-user-label" class="muted"></p>
+          </div>
+        </div>
+
+        <nav id="nav-list" class="nav-list">
+          <button class="nav-btn active" data-view="dashboard-view">Dashboard</button>
+          <button class="nav-btn" data-view="transactions-view">Transactions</button>
+          <button class="nav-btn" data-view="category-view">Category Totals</button>
+          <button class="nav-btn" data-view="shared-view">Shared Expenses</button>
+          <button class="nav-btn" data-view="networth-view">Net Worth</button>
+          <button class="nav-btn" data-view="settings-view">Settings</button>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar reveal">
+          <div>
+            <h1 id="view-title">Dashboard</h1>
+            <p id="today-label" class="muted"></p>
+          </div>
+          <button id="logout-btn" class="btn ghost">Switch User</button>
+        </header>
+
+        <section id="dashboard-view" class="view reveal">
+          <div class="metric-grid" id="dashboard-metrics"></div>
+          <div class="quick-row">
+            <button id="open-expense-btn" class="btn primary">Add Expense</button>
+            <button id="open-income-btn" class="btn accent">Add Income</button>
+          </div>
+          <div class="panel">
+            <h3>Recent Transactions</h3>
+            <div id="recent-transactions" class="table-wrap"></div>
+          </div>
+        </section>
+
+        <section id="transactions-view" class="view hidden">
+          <div class="panel">
+            <h3>Filters</h3>
+            <div class="filter-grid">
+              <label>
+                Search
+                <input id="tx-search" type="text" placeholder="Description, category, device" />
+              </label>
+              <label>
+                Category prefix
+                <input id="tx-category-filter" type="text" placeholder="Starts with" />
+              </label>
+              <label>
+                Device prefix
+                <input id="tx-device-filter" type="text" placeholder="Starts with" />
+              </label>
+              <label>
+                Date (YYYY-MM-DD or prefix)
+                <input id="tx-date-filter" type="text" placeholder="2026-02-26" />
+              </label>
+              <label>
+                Month
+                <input id="tx-month-filter" type="number" min="1" max="12" />
+              </label>
+              <label>
+                Year
+                <input id="tx-year-filter" type="number" min="2000" max="2100" />
+              </label>
+            </div>
+            <div class="quick-row">
+              <button id="tx-sort-toggle" class="btn ghost">Sort: Newest first</button>
+              <button id="tx-clear-filters" class="btn ghost">Clear Filters</button>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>Transactions</h3>
+            <div id="transactions-table" class="table-wrap"></div>
+          </div>
+        </section>
+
+        <section id="category-view" class="view hidden">
+          <div class="panel">
+            <div class="quick-row">
+              <button id="cat-mode-expense" class="btn primary">Expense View</button>
+              <button id="cat-mode-income" class="btn ghost">Income View</button>
+            </div>
+            <div class="filter-grid compact">
+              <label>
+                Month
+                <input id="cat-month" type="number" min="1" max="12" />
+              </label>
+              <label>
+                Year
+                <input id="cat-year" type="number" min="2000" max="2100" />
+              </label>
+              <label>
+                Category filter
+                <input id="cat-filter" type="text" placeholder="Search category" />
+              </label>
+            </div>
+            <p id="cat-total" class="stat-text"></p>
+          </div>
+          <div class="panel">
+            <h3>Category Totals and Budgets</h3>
+            <div id="category-table" class="table-wrap"></div>
+          </div>
+        </section>
+
+        <section id="shared-view" class="view hidden">
+          <div id="shared-summary-view">
+            <div class="panel">
+              <h3>Shared Filters</h3>
+              <div class="filter-grid compact">
+                <label>
+                  Participant
+                  <input id="shared-person-filter" type="text" placeholder="Name" />
+                </label>
+                <label>
+                  Category
+                  <input id="shared-category-filter" type="text" placeholder="Category" />
+                </label>
+              </div>
+              <p id="shared-caption" class="stat-text"></p>
+            </div>
+            <div class="panel">
+              <h3>Per Person Net</h3>
+              <div id="shared-summary-table" class="table-wrap"></div>
+            </div>
+          </div>
+
+          <div id="shared-person-view" class="hidden">
+            <div class="panel">
+              <div class="quick-row">
+                <button id="shared-back-btn" class="btn ghost">Back to Shared Summary</button>
+              </div>
+              <h3 id="shared-person-title"></h3>
+              <p id="shared-person-net" class="stat-text"></p>
+            </div>
+            <div class="panel">
+              <h3>Transactions</h3>
+              <div id="shared-person-table" class="table-wrap"></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="networth-view" class="view hidden">
+          <div class="metric-grid" id="networth-metrics"></div>
+          <div class="panel">
+            <h3>Savings Split</h3>
+            <div id="savings-breakdown" class="table-wrap"></div>
+          </div>
+          <div class="panel">
+            <h3>Debt Split</h3>
+            <div id="debt-breakdown" class="table-wrap"></div>
+          </div>
+        </section>
+
+        <section id="settings-view" class="view hidden">
+          <div class="panel">
+            <h3>Initial Balances</h3>
+            <form id="balance-form" class="filter-grid compact">
+              <label>
+                Account balance
+                <input id="initial-account" type="number" step="0.01" />
+              </label>
+              <label>
+                Cash balance
+                <input id="initial-cash" type="number" step="0.01" />
+              </label>
+              <label>
+                Currency
+                <input id="currency-input" type="text" maxlength="8" />
+              </label>
+            </form>
+            <div class="quick-row">
+              <button id="save-balances-btn" class="btn primary">Save Balances</button>
+              <button id="open-savings-btn" class="btn ghost">Edit Initial Savings</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Payment Instruments and Income Sources</h3>
+            <div class="filter-grid">
+              <label>
+                Expense devices (one per line)
+                <textarea id="devices-text" rows="8"></textarea>
+              </label>
+              <label>
+                Income sources (one per line)
+                <textarea id="sources-text" rows="8"></textarea>
+              </label>
+            </div>
+            <button id="save-instruments-btn" class="btn primary">Save Lists</button>
+          </div>
+
+          <div class="panel">
+            <h3>Category Manager</h3>
+            <div class="filter-grid">
+              <label>
+                Current categories
+                <textarea id="categories-text" rows="8"></textarea>
+              </label>
+              <div class="form-stack">
+                <label>
+                  Add category
+                  <input id="add-category-input" type="text" placeholder="Category name" />
+                </label>
+                <button id="add-category-btn" class="btn ghost">Add Category</button>
+
+                <label>
+                  Rename from
+                  <input id="rename-old-input" type="text" placeholder="Old name" />
+                </label>
+                <label>
+                  Rename to
+                  <input id="rename-new-input" type="text" placeholder="New name" />
+                </label>
+                <button id="rename-category-btn" class="btn ghost">Rename Category</button>
+
+                <label>
+                  Remove category
+                  <input id="remove-category-input" type="text" placeholder="Category name" />
+                </label>
+                <button id="remove-category-btn" class="btn ghost">Remove Category</button>
+              </div>
+            </div>
+            <button id="save-categories-btn" class="btn primary">Save Category List</button>
+          </div>
+
+          <div class="panel">
+            <h3>Import Transactions CSV</h3>
+            <p class="muted">Pick a local CSV file and import transactions for the active user.</p>
+            <div class="filter-grid compact">
+              <label>
+                CSV file
+                <input id="csv-import-input" type="file" accept=".csv,text/csv" />
+              </label>
+              <label>
+                Import mode
+                <select id="csv-import-mode">
+                  <option value="append">Append to existing transactions</option>
+                  <option value="replace">Replace all current transactions</option>
+                </select>
+              </label>
+            </div>
+            <button id="import-csv-btn" class="btn primary">Import CSV</button>
+            <p id="csv-import-status" class="stat-text"></p>
+            <p class="muted">
+              Required: <code>date</code> plus either <code>amount</code> with
+              <code>tx_type</code>/<code>type</code>, or <code>debit</code>/<code>credit</code> columns. Optional:
+              <code>id</code>, <code>timestamp</code>, <code>sub_type</code>, <code>description</code>,
+              <code>category</code>, <code>device</code>, <code>effects_balance</code>,
+              <code>linked_tx_id</code>, <code>shared_flag</code>, <code>shared_splits</code>,
+              <code>shared_notes</code>.
+            </p>
+          </div>
+
+          <div class="panel">
+            <h3>Data Management</h3>
+            <div class="quick-row">
+              <button id="import-settings-btn" class="btn primary">Import Settings</button>
+              <button id="export-settings-btn" class="btn ghost">Export Settings</button>
+              <button id="export-transactions-btn" class="btn ghost">Export Transactions</button>
+            </div>
+            <p class="muted">Import/export your settings and transaction data as JSON files.</p>
+          </div>
+
+          <div class="panel">
+            <h3>Debt Utilities</h3>
+            <p class="muted">Clear outstanding credit card and borrowed debt by creating balancing transactions.</p>
+            <button id="clear-debt-btn" class="btn accent">Clear Outstanding Debt</button>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <div id="expense-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Add Expense</h3>
+          <button data-close="expense-modal" class="icon-btn">x</button>
+        </div>
+        <form id="expense-form" class="form-stack">
+          <div class="filter-grid compact">
+            <label>
+              Amount
+              <input id="expense-amount" type="number" step="0.01" min="0" required />
+            </label>
+            <label>
+              Date
+              <input id="expense-date" type="date" required />
+            </label>
+          </div>
+          <label>
+            Description
+            <input id="expense-description" type="text" required />
+          </label>
+          <div class="filter-grid compact">
+            <label>
+              Category
+              <input id="expense-category" type="text" list="expense-categories-list" required />
+            </label>
+            <label>
+              Device
+              <input id="expense-device" type="text" list="expense-devices-list" required />
+            </label>
+          </div>
+
+          <label class="checkbox-row">
+            <input id="expense-shared-flag" type="checkbox" />
+            Shared expense
+          </label>
+          <div id="expense-shared-box" class="hidden form-stack">
+            <label>
+              Participants (`name` or `name:amount`, comma separated)
+              <input id="expense-shared-input" type="text" placeholder="Alex, Sam:12.5" />
+            </label>
+            <label>
+              Notes
+              <input id="expense-shared-notes" type="text" />
+            </label>
+          </div>
+
+          <button type="submit" class="btn primary">Save Expense</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="income-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Add Income</h3>
+          <button data-close="income-modal" class="icon-btn">x</button>
+        </div>
+        <form id="income-form" class="form-stack">
+          <div class="filter-grid compact">
+            <label>
+              Amount
+              <input id="income-amount" type="number" step="0.01" min="0" required />
+            </label>
+            <label>
+              Date
+              <input id="income-date" type="date" required />
+            </label>
+          </div>
+          <label>
+            Description
+            <input id="income-description" type="text" required />
+          </label>
+          <div class="filter-grid compact">
+            <label>
+              Source
+              <input id="income-source" type="text" list="income-sources-list" required />
+            </label>
+            <label>
+              Refund category
+              <input id="income-refund-category" type="text" list="expense-categories-list" placeholder="Required if source = Refund" />
+            </label>
+          </div>
+
+          <label class="checkbox-row">
+            <input id="income-cash-flag" type="checkbox" />
+            Received in cash
+          </label>
+
+          <label class="checkbox-row">
+            <input id="income-shared-flag" type="checkbox" />
+            Shared income
+          </label>
+          <div id="income-shared-box" class="hidden form-stack">
+            <label>
+              Participants (`name` or `name:amount`, comma separated)
+              <input id="income-shared-input" type="text" placeholder="Alex, Sam:12.5" />
+            </label>
+            <label>
+              Notes
+              <input id="income-shared-notes" type="text" />
+            </label>
+          </div>
+
+          <button type="submit" class="btn accent">Save Income</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="edit-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Edit Transaction</h3>
+          <button data-close="edit-modal" class="icon-btn">x</button>
+        </div>
+        <form id="edit-form" class="form-stack">
+          <input id="edit-id" type="hidden" />
+          <div class="filter-grid compact">
+            <label>
+              Amount
+              <input id="edit-amount" type="number" step="0.01" min="0" required />
+            </label>
+            <label>
+              Date
+              <input id="edit-date" type="date" required />
+            </label>
+          </div>
+          <div class="filter-grid compact">
+            <label>
+              Type
+              <input id="edit-type" type="text" readonly />
+            </label>
+            <label>
+              Sub Type
+              <input id="edit-sub-type" type="text" />
+            </label>
+          </div>
+          <label>
+            Description
+            <input id="edit-description" type="text" required />
+          </label>
+          <div class="filter-grid compact">
+            <label>
+              Category
+              <input id="edit-category" type="text" />
+            </label>
+            <label>
+              Device
+              <input id="edit-device" type="text" />
+            </label>
+          </div>
+          <label class="checkbox-row">
+            <input id="edit-effects-balance" type="checkbox" />
+            Affects liquid balance
+          </label>
+          <label class="checkbox-row">
+            <input id="edit-shared-flag" type="checkbox" />
+            Shared entry
+          </label>
+          <div id="edit-shared-box" class="hidden form-stack">
+            <label>
+              Participants
+              <input id="edit-shared-input" type="text" placeholder="Alex, Sam:12.5" />
+            </label>
+            <label>
+              Notes
+              <input id="edit-shared-notes" type="text" />
+            </label>
+          </div>
+          <button type="submit" class="btn primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="savings-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Initial Savings</h3>
+          <button data-close="savings-modal" class="icon-btn">x</button>
+        </div>
+        <form id="savings-form" class="form-stack">
+          <div class="filter-grid compact">
+            <label>
+              Savings
+              <input id="saving-main" type="number" step="0.01" />
+            </label>
+            <label>
+              FD
+              <input id="saving-fd" type="number" step="0.01" />
+            </label>
+            <label>
+              RD
+              <input id="saving-rd" type="number" step="0.01" />
+            </label>
+            <label>
+              Gold
+              <input id="saving-gold" type="number" step="0.01" />
+            </label>
+          </div>
+          <button type="submit" class="btn primary">Save Savings</button>
+        </form>
+      </div>
+    </div>
+
+    <datalist id="expense-categories-list"></datalist>
+    <datalist id="expense-devices-list"></datalist>
+    <datalist id="income-sources-list"></datalist>
+
+    <script src="app.js"></script>
+  </body>
+</html>
