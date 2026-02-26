@@ -3,7 +3,7 @@
 A local-first browser app that implements the full feature set from finance tracker
 
 ## User Interface
-![Alt text](https://github.com/shashkhr25/Finance-Tracker-Web-app/blob/main/screenshots/dashboard)%   
+![Alt text](https://github.com/shashkhr25/Finance-Tracker-Web-app/blob/main/screenshots/dashboard)   
 
 ## Run
 
