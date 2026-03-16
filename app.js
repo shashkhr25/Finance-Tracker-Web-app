@@ -181,8 +181,7 @@
     savingRd: document.getElementById("saving-rd"),
     savingGold: document.getElementById("saving-gold"),
 
-    expenseCategoriesList: document.getElementById("expense-categories-list"),
-    expenseDevicesList: document.getElementById("expense-devices-list"),
+    refundCategoriesList: document.getElementById("refund-categories-list"),
     incomeSourcesList: document.getElementById("income-sources-list"),
 
     toast: document.getElementById("toast"),
@@ -210,6 +209,20 @@
     els.openIncomeBtn.addEventListener("click", () => {
       resetIncomeForm();
       openModal("income-modal");
+    });
+
+    document.querySelectorAll("[data-action='open-expense']").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        resetExpenseForm();
+        openModal("expense-modal");
+      });
+    });
+
+    document.querySelectorAll("[data-action='open-income']").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        resetIncomeForm();
+        openModal("income-modal");
+      });
     });
 
     els.expenseSharedFlag.addEventListener("change", () => {
@@ -761,12 +774,23 @@
   function refreshDatalists() {
     const settings = getCurrentSettings();
 
-    els.expenseCategoriesList.innerHTML = settings.expense_categories
-      .map((category) => `<option value="${escapeHtml(category)}"></option>`)
-      .join("");
+    const categoryOptions = [
+      `<option value="" disabled selected>Select category</option>`,
+      ...settings.expense_categories.map(
+        (category) => `<option value="${escapeHtml(category)}">${escapeHtml(category)}</option>`
+      ),
+    ].join("");
 
-    els.expenseDevicesList.innerHTML = settings.expense_devices
-      .map((device) => `<option value="${escapeHtml(device)}"></option>`)
+    const deviceOptions = [
+      `<option value="" disabled selected>Select device</option>`,
+      ...settings.expense_devices.map((device) => `<option value="${escapeHtml(device)}">${escapeHtml(device)}</option>`),
+    ].join("");
+
+    els.expenseCategory.innerHTML = categoryOptions;
+    els.expenseDevice.innerHTML = deviceOptions;
+
+    els.refundCategoriesList.innerHTML = settings.expense_categories
+      .map((category) => `<option value="${escapeHtml(category)}"></option>`)
       .join("");
 
     els.incomeSourcesList.innerHTML = settings.income_sources
@@ -3070,6 +3094,9 @@
     let cleared = 0;
 
     for (const tx of transactions) {
+      if (tx.shared_flag) {
+        continue;
+      }
       if (tx.tx_type !== "expense") {
         continue;
       }

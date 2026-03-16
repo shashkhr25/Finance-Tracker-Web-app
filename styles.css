@@ -27,6 +27,7 @@ body {
   background: linear-gradient(180deg, #f7f9fd 0%, #eef2f7 100%);
   color: var(--text);
   font-family: "Plus Jakarta Sans", sans-serif;
+  overflow-x: hidden;
 }
 
 h1,
@@ -126,6 +127,7 @@ select {
 .app-shell {
   display: grid;
   grid-template-columns: 280px 1fr;
+  min-width: 0;
 }
 
 .sidebar {
@@ -138,6 +140,7 @@ select {
   display: grid;
   gap: 16px;
   grid-auto-rows: min-content;
+  min-width: 0;
 }
 
 .brand {
@@ -221,6 +224,7 @@ select {
   display: grid;
   gap: 14px;
   align-content: start;
+  min-width: 0;
 }
 
 .topbar {
@@ -234,6 +238,10 @@ select {
   padding: 14px 16px;
 }
 
+.mobile-actions {
+  display: none;
+}
+
 .view {
   display: grid;
   gap: 14px;
@@ -242,7 +250,7 @@ select {
 
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -551,6 +559,64 @@ th {
 
   .auth-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .main-content {
+    padding: 14px 14px 90px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-grid,
+  .filter-grid.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mobile-actions {
+    position: sticky;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(247, 249, 252, 0.98);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    z-index: 5;
+  }
+
+  .mobile-actions .btn {
+    min-height: 52px;
+    font-size: 1rem;
+  }
+
+  .quick-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-card {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .modal {
+    padding: 0;
   }
 }
 

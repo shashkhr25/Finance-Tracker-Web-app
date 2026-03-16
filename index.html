@@ -78,6 +78,11 @@
           </div>
         </header>
 
+        <div class="mobile-actions" aria-label="Quick actions">
+          <button class="btn primary" data-action="open-expense">Add Expense</button>
+          <button class="btn accent" data-action="open-income">Add Income</button>
+        </div>
+
         <section id="dashboard-view" class="view reveal">
           <div class="metric-grid" id="dashboard-metrics"></div>
           <div class="quick-row">
@@ -348,14 +353,14 @@
             <input id="expense-description" type="text" required />
           </label>
           <div class="filter-grid compact">
-            <label>
-              Category
-              <input id="expense-category" type="text" list="expense-categories-list" required />
-            </label>
-            <label>
-              Device
-              <input id="expense-device" type="text" list="expense-devices-list" required />
-            </label>
+          <label>
+            Category
+            <select id="expense-category" required></select>
+          </label>
+          <label>
+            Device
+            <select id="expense-device" required></select>
+          </label>
           </div>
 
           <label class="checkbox-row">
@@ -406,7 +411,7 @@
             </label>
             <label>
               Refund category
-              <input id="income-refund-category" type="text" list="expense-categories-list" placeholder="Required if source = Refund" />
+              <input id="income-refund-category" type="text" list="refund-categories-list" placeholder="Required if source = Refund" />
             </label>
           </div>
 
@@ -530,8 +535,7 @@
       </div>
     </div>
 
-    <datalist id="expense-categories-list"></datalist>
-    <datalist id="expense-devices-list"></datalist>
+    <datalist id="refund-categories-list"></datalist>
     <datalist id="income-sources-list"></datalist>
 
     <script src="app.js"></script>
