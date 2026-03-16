@@ -54,6 +54,11 @@
           <p class="muted small">Quick access to tracking, reports, and settings</p>
         </div>
 
+        <div class="mobile-actions" aria-label="Quick actions">
+          <button class="btn primary" data-action="open-expense">Add Expense</button>
+          <button class="btn accent" data-action="open-income">Add Income</button>
+        </div>
+
         <p class="section-label">Workspace</p>
         <nav id="nav-list" class="nav-list">
           <button class="nav-btn active" data-view="dashboard-view">Dashboard</button>
@@ -77,11 +82,6 @@
             <p id="today-label" class="muted"></p>
           </div>
         </header>
-
-        <div class="mobile-actions" aria-label="Quick actions">
-          <button class="btn primary" data-action="open-expense">Add Expense</button>
-          <button class="btn accent" data-action="open-income">Add Income</button>
-        </div>
 
         <section id="dashboard-view" class="view reveal">
           <div class="metric-grid" id="dashboard-metrics"></div>

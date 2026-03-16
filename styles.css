@@ -564,7 +564,7 @@ th {
 
 @media (max-width: 720px) {
   .main-content {
-    padding: 14px 14px 90px;
+    padding: 14px;
   }
 
   .topbar {
@@ -587,25 +587,28 @@ th {
   }
 
   .mobile-actions {
-    position: sticky;
-    bottom: 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px;
     background: rgba(247, 249, 252, 0.98);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 14px;
     z-index: 5;
   }
 
   .mobile-actions .btn {
-    min-height: 52px;
-    font-size: 1rem;
+    min-height: 82px;
+    font-size: 1.16rem;
+    border-radius: 8px;
   }
 
   .quick-row {
     grid-template-columns: 1fr;
+  }
+
+  #dashboard-view .quick-row {
+    display: none;
   }
 
   .modal-card {
