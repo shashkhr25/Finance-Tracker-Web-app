@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FinanceTracker Web</title>
+    <title>MoneyTracker Web</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -20,7 +20,7 @@
 
     <section id="user-screen" class="screen auth-screen">
       <div class="auth-card reveal">
-        <h1>FinanceTracker</h1>
+        <h1>MoneyTracker</h1>
         <p class="muted">Local-first personal finance, debt, and shared expense tracking.</p>
 
         <div class="auth-grid">
@@ -46,13 +46,15 @@
     <section id="app-shell" class="screen app-shell hidden">
       <aside class="sidebar reveal">
         <div class="brand">
-          <span class="brand-dot"></span>
-          <div>
-            <h2>FinanceTracker</h2>
-            <p id="active-user-label" class="muted"></p>
-          </div>
+          <h2>MoneyTracker</h2>
+        </div>
+        <div class="user-card">
+          <p class="eyebrow">Current user</p>
+          <p id="active-user-label" class="user-name"></p>
+          <p class="muted small">Quick access to tracking, reports, and settings</p>
         </div>
 
+        <p class="section-label">Workspace</p>
         <nav id="nav-list" class="nav-list">
           <button class="nav-btn active" data-view="dashboard-view">Dashboard</button>
           <button class="nav-btn" data-view="transactions-view">Transactions</button>
@@ -61,6 +63,11 @@
           <button class="nav-btn" data-view="networth-view">Net Worth</button>
           <button class="nav-btn" data-view="settings-view">Settings</button>
         </nav>
+
+        <div class="switch-card">
+          <p class="eyebrow">Need another profile?</p>
+          <button id="logout-btn" class="btn switch">Switch User</button>
+        </div>
       </aside>
 
       <main class="main-content">
@@ -69,7 +76,6 @@
             <h1 id="view-title">Dashboard</h1>
             <p id="today-label" class="muted"></p>
           </div>
-          <button id="logout-btn" class="btn ghost">Switch User</button>
         </header>
 
         <section id="dashboard-view" class="view reveal">

@@ -722,7 +722,7 @@
       "settings-view": "Settings",
     }[viewId];
 
-    els.viewTitle.textContent = title || "FinanceTracker";
+    els.viewTitle.textContent = title || "MoneyTracker";
 
     if (viewId === "settings-view") {
       hydrateSettingsFields();
@@ -740,7 +740,7 @@
       return;
     }
 
-    els.activeUserLabel.textContent = `User: ${currentUser}`;
+    els.activeUserLabel.textContent = currentUser;
     els.todayLabel.textContent = new Date().toLocaleDateString(undefined, {
       weekday: "long",
       year: "numeric",
@@ -1006,7 +1006,7 @@
       return;
     }
 
-    const amount = round2(Number(els.editAmount.value));
+    const amount = parseAmountInput(els.editAmount.value);
     const date = els.editDate.value;
 
     if (!Number.isFinite(amount) || amount <= 0) {
@@ -1089,10 +1089,15 @@
     renderAll();
   }
 
+  function parseAmountInput(value) {
+    const parsed = parseCsvNumber(value);
+    return round2(parsed);
+  }
+
   function onExpenseSubmit(event) {
     event.preventDefault();
 
-    const amount = round2(Number(els.expenseAmount.value));
+    const amount = parseAmountInput(els.expenseAmount.value);
     const date = els.expenseDate.value;
     const description = els.expenseDescription.value.trim();
     const category = els.expenseCategory.value.trim();
@@ -1247,7 +1252,7 @@
   function onIncomeSubmit(event) {
     event.preventDefault();
 
-    const amount = round2(Number(els.incomeAmount.value));
+    const amount = parseAmountInput(els.incomeAmount.value);
     const date = els.incomeDate.value;
     const description = els.incomeDescription.value.trim();
     const source = els.incomeSource.value.trim();
@@ -1882,6 +1887,56 @@
     els.csvImportInput.value = "";
   }
 
+  function normalizeImportedSettings(settingsData) {
+    if (settingsData && typeof settingsData.settings === "object") {
+      return settingsData.settings;
+    }
+
+    if (!settingsData || typeof settingsData !== "object") {
+      return null;
+    }
+
+    const normalized = { ...settingsData };
+
+    if (!normalized.initial_balances && (normalized.initial_balance !== undefined || normalized.initial_cash_balance !== undefined)) {
+      normalized.initial_balances = {
+        account: Number(normalized.initial_balance ?? 0),
+        cash: Number(normalized.initial_cash_balance ?? 0),
+      };
+    }
+
+    if (
+      !normalized.initial_savings &&
+      (normalized.initial_savings_balance !== undefined ||
+        normalized.initial_savings_fd_balance !== undefined ||
+        normalized.initial_savings_rd_balance !== undefined ||
+        normalized.initial_savings_gold_balance !== undefined)
+    ) {
+      normalized.initial_savings = {
+        savings: Number(normalized.initial_savings_balance ?? 0),
+        fd: Number(normalized.initial_savings_fd_balance ?? 0),
+        rd: Number(normalized.initial_savings_rd_balance ?? 0),
+        gold: Number(normalized.initial_savings_gold_balance ?? 0),
+      };
+    }
+
+    if (!normalized.lifecycle && (normalized.last_debt_cleared || normalized.last_month_processed)) {
+      normalized.lifecycle = {
+        last_debt_cleared: normalized.last_debt_cleared ?? null,
+        last_month_processed: normalized.last_month_processed ?? null,
+      };
+    }
+
+    if (typeof normalized.version === "string") {
+      const parsed = Number(normalized.version);
+      if (!Number.isNaN(parsed)) {
+        normalized.version = parsed;
+      }
+    }
+
+    return normalized;
+  }
+
   function importSettings() {
     const input = document.createElement("input");
     input.type = "file";
@@ -1893,9 +1948,9 @@
       try {
         const text = await readFileAsText(file);
         const settingsData = JSON.parse(text);
-        
-        // Validate settings structure
-        if (!settingsData.settings || typeof settingsData.settings !== 'object') {
+
+        const importedSettings = normalizeImportedSettings(settingsData);
+        if (!importedSettings) {
           showToast("Invalid settings file format");
           return;
         }
@@ -1908,7 +1963,7 @@
 
         // Import settings
         const userData = getCurrentUserData();
-        userData.settings = { ...userData.settings, ...settingsData.settings };
+        userData.settings = { ...userData.settings, ...importedSettings };
         
         // Ensure required fields exist
         userData.settings.version ||= 1;
@@ -1916,6 +1971,7 @@
         userData.settings.initial_balances ||= { account: 0, cash: 0 };
         userData.settings.initial_savings ||= { savings: 0, fd: 0, rd: 0, gold: 0 };
         userData.settings.category_budgets ||= {};
+        userData.settings.lifecycle ||= { last_debt_cleared: null, last_month_processed: null };
 
         saveStore();
         showToast("Settings imported successfully");
@@ -2090,6 +2146,8 @@
   }
 
   function parseCsvTransactionRow(row, headerMap) {
+    const amountRaw = getCsvValue(row, headerMap, ["amount", "value", "transaction_amount", "amt"]);
+    const amountRawParsed = parseCsvNumber(amountRaw);
     const txFields = deriveCsvTypeAndAmount(row, headerMap);
     if (!txFields.txType) {
       throw new Error("Unable to determine tx_type");
@@ -2127,6 +2185,22 @@
       Boolean(sharedRaw)
     );
 
+    let effectsBalance = parseBooleanValue(
+      getCsvValue(row, headerMap, ["effects_balance", "affects_balance"]),
+      true
+    );
+
+    // If the CSV had an explicit 0 amount but shared splits, treat it as a balance-only placeholder.
+    if (sharedRaw && Number.isFinite(amountRawParsed) && amountRawParsed === 0) {
+      effectsBalance = false;
+    }
+
+    // Borrowed debt entries should not impact liquid balance.
+    const device = getCsvValue(row, headerMap, ["device", "source", "payment_method", "mode", "account"]);
+    if (txType === "expense" && normalizeDeviceType(device) === "DEBT_BORROWED") {
+      effectsBalance = false;
+    }
+
     const tx = createTransaction({
       id: getCsvValue(row, headerMap, ["id", "transaction_id", "txn_id"]) || createId(),
       timestamp: normalizeCsvTimestamp(getCsvValue(row, headerMap, ["timestamp", "created_at"])),
@@ -2136,11 +2210,8 @@
       date,
       description: getCsvValue(row, headerMap, ["description", "note", "notes", "memo", "narration", "details"]),
       category: getCsvValue(row, headerMap, ["category", "label", "tag"]),
-      device: getCsvValue(row, headerMap, ["device", "source", "payment_method", "mode", "account"]),
-      effects_balance: parseBooleanValue(
-        getCsvValue(row, headerMap, ["effects_balance", "affects_balance"]),
-        true
-      ),
+      device,
+      effects_balance: effectsBalance,
       linked_tx_id: getCsvValue(row, headerMap, ["linked_tx_id", "linked_id", "linked_transaction_id"]),
       shared_flag: sharedFlag,
       shared_splits: sharedFlag ? sharedSplits : {},
