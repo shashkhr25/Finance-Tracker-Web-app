@@ -23,33 +23,30 @@ A comprehensive, private, and powerful personal finance management tool built wi
 ### Dashboard
 ![Dashboard](screenshots/Dashboard.png)
 
-### Transactions
+### Transactions Ledger
 ![Transactions](screenshots/Transactions.png)
 
 ### Category Analysis
 ![Category Totals](screenshots/Category%20Totals.png)
 
 ### Shared Expenses & Splitting
-![Shared Expenses](screenshots/Shared%20Expenses.png)
+![Shared Transactions](screenshots/Shared%20transactions.png)
 
 ### Net Worth Calculation
 ![Net Worth](screenshots/NetWorth.png)
 
-### Google Sheets Integration
-![Import](screenshots/Import.png)
-
-### Add Expense / Income
+### Add Expense & Income
 | Add Expense | Add Income |
 | :---: | :---: |
-| ![Add Expense](screenshots/Add%20Expense.png) | ![Add Income](screenshots/Add%20Income%201.png) |
+| ![Add Expense](screenshots/AddExpense.png) | ![Add Income](screenshots/AddIncome.png) |
+
+### Basket Expenses (Multi-item)
+![Add Basket](screenshots/AddBasket.png)
 
 ### Settings & Customization
 | Settings Main | Advanced Config |
 | :---: | :---: |
 | ![Settings 1](screenshots/Settings%201.png) | ![Settings 2](screenshots/Settings%202.png) |
-
-### Basket Expenses (Multi-item)
-![Basket](screenshots/Basket.png)
 
 ## 🛠 Tech Stack
 
