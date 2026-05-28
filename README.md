@@ -43,10 +43,6 @@ A comprehensive, private, and powerful personal finance management tool built wi
 ### Basket Expenses (Multi-item)
 ![Add Basket](screenshots/AddBasket.png)
 
-### Settings & Customization
-| Settings Main | Advanced Config |
-| :---: | :---: |
-| ![Settings 1](screenshots/Settings%201.png) | ![Settings 2](screenshots/Settings%202.png) |
 
 ## 🛠 Tech Stack
 
