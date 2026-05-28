@@ -1,43 +1,73 @@
-# FinanceTracker Web
+# React + TypeScript + Vite
 
-A local-first browser app that implements the full feature set from finance tracker
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## User Interface
-![Alt text](https://github.com/shashkhr25/Finance-Tracker-Web-app/blob/main/screenshots/dashboard)   
+Currently, two official plugins are available:
 
-## Run
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-1. Open `ndex.html` in your browser.
-2. Create or select a user.
-3. Start adding expense/income entries from Dashboard.
+## React Compiler
 
-No backend or install step is required. Data is stored per user in `localStorage`.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## CSV Import
+## Expanding the ESLint configuration
 
-- Go to `Settings -> Import Transactions CSV`.
-- Required: `date` and either:
-  - `tx_type`/`type` + `amount`, or
-  - `debit`/`credit` columns (type inferred).
-- Optional headers: `id`, `timestamp`, `sub_type`, `description`, `category`, `device`, `effects_balance`, `linked_tx_id`, `shared_flag`, `shared_splits`, `shared_notes`.
-- Import modes:
-  - `Append` adds rows to existing transactions.
-  - `Replace` overwrites current transactions only if at least one valid row is parsed.
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Implemented Modules
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-- User accounts and session restore.
-- Dashboard with liquid balance, debt cards, and quick actions.
-- Add Expense/Add Income flows with credit-card debt handling, refunds, savings withdraw, and shared splits.
-- Transactions screen with sorting, filters, edit, and delete.
-- Category Totals with refund-aware net spend, budgets, and variance.
-- Shared Expenses summary and per-person drilldown.
-- Net Worth with savings/debt breakdown.
-- Settings for balances, categories, devices/sources, savings, CSV transaction import, debt clear, and user switching.
-- Monthly lifecycle rollover archive and day-19 auto debt clear guard.
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-## Files
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-- `index.html` UI structure and views.
-- `styles.css` responsive clean theme.
-- `app.js` full application logic and persistence.
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```

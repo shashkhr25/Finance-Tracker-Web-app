@@ -1,0 +1,84 @@
+FINANCETRACKER BUSINESS LOGIC DOCUMENTATION
+===========================================
+
+1. DATA MODELS
+--------------
+- Transaction: Central record. Includes id, timestamp, type (income/expense/transfer), sub_type, amount, date, description, category, device, account, and several flags for shared transactions and credit card logic.
+- SharedSplit: Used within a transaction to define who owes what. Contains name and amount (optional - if missing, split is equally divided).
+
+2. DEBT CALCULATION (CRITICAL)
+------------------------------
+Debt is split into two categories: Credit Card Debt and Borrowed Debt.
+
+A. Credit Card Debt:
+   - Billing Cycle: 19th of month N to 18th of month N+1.
+   - Logic: 
+     1. Sort cycles oldest first.
+     2. Collect total expenses (tx_type='expense', sub_type='credit_card_expense' or device type CREDIT_CARD) per cycle.
+     3. Collect total payments (description starts with 'CREDIT CARD PAYMENT', or sub_type='credit_card_payment', or category='Credit Card Bill' + UPI/Bank Transfer device).
+     4. Payment Application: ALL payments are pooled and applied to the OLDEST expenses first.
+     5. Debt = Max(0, Cycle Expenses - Allocated Payments).
+
+B. Borrowed Debt:
+   - Incremented by: Transactions with device 'DEBT_BORROWED' (excluding shared ones, as those are netted separately).
+   - Decremented by: Transactions with category 'Debt Cleared'.
+   - Net Shared Payable: The sum of all shared balances where YOU owe someone else (calculated in the Shared Summary).
+   - Total Borrowed Debt = Raw Borrowed entries + Net Shared Payable.
+
+3. BASKET EXPENSES (MULTI-ITEM)
+-------------------------------
+- Logic: A "Basket" is not a single transaction type in the backend, but a UI helper that creates MULTIPLE individual transactions.
+- Implementation: For each item in the basket, create a separate transaction with:
+    - Unique ID
+    - shared common metadata (date, device, account)
+    - individual amount, description, and category.
+
+4. REFUNDS
+----------
+- Logic: A refund is an 'income' transaction with sub_type='refund'.
+- Impact:
+    - If device is CREDIT_CARD: It reduces the credit card debt for that billing cycle (treated as a payment).
+    - If device is Bank/Cash: It increases that account's balance.
+- Note: In category reporting, refunds should ideally be subtracted from the category total rather than added to income.
+
+5. SHARED TRANSACTIONS
+----------------------
+- Flags: shared_flag=True, shared_splits contains list of participants.
+- Allocation:
+    1. sum all explicit amounts in shared_splits.
+    2. Remaining amount (Total - Specified) is divided equally among participants with no specified amount.
+- Balance Impact (The "Sign"):
+    - You paid (Expense): You should receive money (+ sign).
+    - You borrowed/income (Income): You owe money (- sign).
+- Reimbursement Logic (Oldest-First):
+    - When you receive "Income" from a participant, it is applied to their OLDEST outstanding shared expense first.
+    - Category Reporting: When a participant pays you back, that amount should be "refunded" back to the category of the original expense in your reports.
+
+6. CASH WITHDRAWALS
+-------------------
+- Logic: Linked pair of transactions with sub_type='cash_withdrawal'.
+    1. Expense: Source Account (e.g., HDFC), Device (e.g., DEBIT), effects_balance=True.
+    2. Income: Account="", Device="CASH", effects_balance=True.
+- Result: Total Net Worth stays the same, but money moves from Bank Account to Cash Balance.
+
+7. SAVINGS CALCULATIONS
+-----------------------
+- Tracked Categories: "Savings", "Savings FD", "Savings RD", "Savings Gold".
+- Logic:
+    - Initial Balances: Loaded from settings (`initial_savings_balance`, etc.).
+    - Contribution: Expense with category matching one of the savings labels.
+    - Withdrawal: Income with category "Taken from Savings" OR device "SAVINGS_WITHDRAW".
+- Calculation: Initial + Contributions - Withdrawals.
+
+8. NET WORTH CALCULATION
+------------------------
+Net Worth = (Liquid Bank Balances) + (Cash Balance) + (Total Savings) - (Credit Card Debt) - (Borrowed Debt).
+
+9. ACCOUNT BALANCES
+-------------------
+- Local state starts with initial account balances from settings.
+- For each transaction:
+    - IF effects_balance=True AND NOT credit_card_expense/debt:
+        - Income: account_balance += amount.
+        - Expense: account_balance -= amount.
+- Special Accounts: "CASH" is a virtual account tied to the "CASH" device. "DEBT_ACCOUNT" is used for borrowing.

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyTracker | Networth</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo">MoneyTracker</div>
+        
+        <div class="user-profile">
+            shashwat
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a href="transactions.html" class="nav-link">Transactions</a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">Category Totals</a>
+            </li>
+            <li class="nav-item">
+                <a href="shared.html" class="nav-link">Shared Expenses</a>
+            </li>
+            <li class="nav-item">
+                <a href="networth.html" class="nav-link active">Networth</a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">Settings</a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <p>Need another profile?</p>
+            <button class="btn-switch">Switch User</button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="hero-card">
+            <div class="hero-label">Estimated Net Worth</div>
+            <div id="net-worth-value" class="hero-value">0.00</div>
+            <div class="hero-subtext">Combined value of all liquid assets, savings, and debts</div>
+        </div>
+
+        <div class="nw-section-header">
+            <div class="nw-title">Assets & Savings</div>
+            <div id="total-assets" class="nw-total" style="color: #27ae60;">0.00</div>
+        </div>
+        <div id="assets-list" class="settings-section" style="padding: 1rem 2.5rem;">
+            <!-- Dynamic asset items -->
+        </div>
+
+        <div class="nw-section-header">
+            <div class="nw-title">Liabilities & Debt</div>
+            <div id="total-liabilities" class="nw-total" style="color: #e74c3c;">0.00</div>
+        </div>
+        <div class="dashboard-grid">
+            <div class="stat-card" style="text-align: left;">
+                <div class="stat-label">Credit Card Debt</div>
+                <div id="cc-debt-val" class="stat-value negative" style="font-size: 3rem; margin-bottom: 0;">0.00</div>
+            </div>
+            <div class="stat-card" style="text-align: left;">
+                <div class="stat-label">Money Owed</div>
+                <div id="borrowed-debt-val" class="stat-value negative" style="font-size: 3rem; margin-bottom: 0;">0.00</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Action</h2>
+                <span id="modal-close" class="modal-close">&times;</span>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- Dynamic form content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
