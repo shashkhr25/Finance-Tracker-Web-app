@@ -1,73 +1,119 @@
-# React + TypeScript + Vite
+# Finance Tracker Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive, private, and powerful personal finance management tool built with React, TypeScript, and Vite. Track your net worth, manage transactions, handle shared expenses, and sync everything securely with your own Google Sheets.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Dashboard Overview:** Real-time summary of your liquid balance, bank balances, cash, savings, and total debt.
+- **Transaction Management:** Detailed logging of expenses and income with support for categories, payment devices (UPI, Credit Cards, Cash), and locations.
+- **Advanced Debt Tracking:** 
+  - **Credit Card Logic:** Automatic billing cycle management (19th of month N to 18th of month N+1).
+  - **Debt Pooling:** Payments are automatically applied to the oldest outstanding credit card expenses.
+  - **Borrowed Debt:** Track personal loans and shared payables in one place.
+- **Cloud Sync (Google Sheets):** Use your Google Sheets as a database. Push and pull data seamlessly to ensure your financial records are always backed up and accessible.
+- **Shared Expenses & Splitting:** 
+  - **Flexible Splitting:** Support for even splits or custom amount assignments among participants.
+  - **Settlement Tracking:** Track who owes whom with an oldest-first settlement logic.
+- **Net Worth Tracking:** Automated calculation of your total net worth by aggregating data from multiple accounts, fixed deposits (FD), recurring deposits (RD), gold, and other savings.
+- **Category Totals:** Visualize your spending habits with category-wise breakdowns and budget tracking.
+- **Privacy First:** Local-first architecture. Your data stays in your browser and your personal Google Drive.
 
-## React Compiler
+## 📸 Screenshots
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Dashboard
+![Dashboard](screenshots/Dashboard.png)
 
-## Expanding the ESLint configuration
+### Transactions
+![Transactions](screenshots/Transactions.png)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Category Analysis
+![Category Totals](screenshots/Category%20Totals.png)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Shared Expenses & Splitting
+![Shared Expenses](screenshots/Shared%20Expenses.png)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Net Worth Calculation
+![Net Worth](screenshots/NetWorth.png)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Google Sheets Integration
+![Import](screenshots/Import.png)
+
+### Add Expense / Income
+| Add Expense | Add Income |
+| :---: | :---: |
+| ![Add Expense](screenshots/Add%20Expense.png) | ![Add Income](screenshots/Add%20Income%201.png) |
+
+### Settings & Customization
+| Settings Main | Advanced Config |
+| :---: | :---: |
+| ![Settings 1](screenshots/Settings%201.png) | ![Settings 2](screenshots/Settings%202.png) |
+
+### Basket Expenses (Multi-item)
+![Basket](screenshots/Basket.png)
+
+## 🛠 Tech Stack
+
+
+- **Frontend:** [React 19](https://react.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool:** [Vite](https://vitejs.dev/)
+- **Routing:** [React Router 7](https://reactrouter.com/)
+- **API Integration:** [Google Sheets API v4](https://developers.google.com/sheets/api)
+- **State Management:** React Context API
+- **Styling:** Vanilla CSS
+
+## 🏁 Getting Started
+
+### Prerequisites
+
+- Node.js (Latest LTS recommended)
+- A Google Cloud Project (for Google Sheets sync)
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/your-username/finance-tracker-web-app.git
+   cd finance-tracker-web-app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Configuration:**
+   - Open the app in your browser (usually `http://localhost:5173`).
+   - Navigate to **Settings**.
+   - Paste your Google Spreadsheet URL to enable cloud sync.
+   - Configure your bank accounts and categories as needed.
+
+## 📂 Project Structure
+
+```text
+├── public/                # Static assets and icons
+├── src/
+│   ├── components/        # Reusable UI components (Modal, Layout, Sidebar)
+│   ├── context/           # Auth and Finance state management
+│   ├── pages/             # Page components (Dashboard, Transactions, etc.)
+│   ├── services/          # API services (Google Sheets)
+│   ├── types/             # TypeScript definitions
+│   ├── utils/             # Helper functions and finance logic
+│   ├── App.tsx            # Main application entry and routing
+│   └── main.tsx           # React bootstrap
+├── screenshots/           # Project preview images
+└── package.json           # Dependencies and scripts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔒 Security & Privacy
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This application is designed with privacy in mind. Your financial data is stored locally in your browser's `LocalStorage` and optionally synced to **your own** private Google Spreadsheet. No third-party servers (other than Google) ever see your financial data.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+Built with ❤️ by [Shashwat](https://github.com/shashwat)
