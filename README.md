@@ -113,4 +113,4 @@ This application is designed with privacy in mind. Your financial data is stored
 
 ---
 
-Built with ❤️ by [Shashwat](https://github.com/shashwat)
+Built with ❤️ for Personal Finance management
